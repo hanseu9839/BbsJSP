@@ -1,0 +1,48 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+    <!-- UTF-8은 요즘 가장 많이 쓰이는 대표적인 형식 (한글,영어) 둘다 지원됨 -->
+    <%@ page import="user.UserDAO" %>
+    <%@ page import="java.io.PrintWriter" %>
+    <% request.setCharacterEncoding("UTF-8"); %> //request로 받는 것들을 다 UTF-8로 바꾸어줌 
+    <jsp:useBean id="user" class="user.User" scope="page"/> //회원가입에서는 5가지의 내용들이 다 사용되기때문에 다 user로 받아준다. 
+    <jsp:setProperty name="user" property="userID"/>
+    <jsp:setProperty name="user" property="userPassword"/>
+     <jsp:setProperty name="user" property="userName"/>
+    <jsp:setProperty name="user" property="userGender"/>
+     <jsp:setProperty name="user" property="userEmail"/>
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>JSP 게시판 웹사이트 </title>
+</head>
+<body>
+   <% 
+   if(user.getUserID() == null || user.getUserPassword()==null || user.getUserName() == null ||
+   	  user.getUserGender() == null || user.getUserEmail()==null){
+	   PrintWriter script = response.getWriter();
+       script.println("<script>");
+       script.println("alert('입력이 안 된 사항이 있습니다.')");
+       script.println("history back()");
+       script.println("</script>");
+   } else {
+	    UserDAO userDAO = new UserDAO(); //UserDAO객체에서 하나의 userDAO를 만들어준다. 
+	      int result = userDAO.join(user); //join메서드를 사용하기때문에 userDAO.join이다. user내용을 result에 받는다.
+	      if(result== -1){ //실패하는 경우 이미 있는 아이디일 경우 실패한다.  
+	         PrintWriter script = response.getWriter();
+	         script.println("<script>");
+	         script.println("alert('이미 존재하는 아이디입니다.')");
+	         script.println("history.back()"); // 이전페이지로 다시 돌아가는 부분 
+	         script.println("</script>");
+	      } 
+	      else if(result == 0){
+	        	 PrintWriter script = response.getWriter();
+	        	 script.println("<script>");
+	         	 script.println("location.href = 'main.jsp'");
+	         	script.println("</script>");
+	      } //회원가입이 된 경우 로그인 페이지로 이동한다. 
+  	 }
+	   
+   %>
+</body>
+</html>
